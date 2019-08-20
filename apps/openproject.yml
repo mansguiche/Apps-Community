@@ -37,13 +37,13 @@
           - '/opt/appdata/{{pgrole}}/data:/var/openproject/pgdata'
           - '/opt/appdata/{{pgrole}}/static:/var/openproject/assets'
           - '{{path.stdout}}:{{path.stdout}}'
-          - '/mnt:/mnt'
 
     - name: 'Setting PG ENV'
       set_fact:
         pg_env:
-          PUID: 1000
-          PGID: 1000
+          PUID: '1000'
+          PGID: '1000'
+          SECRET_KEY_BASE: 'secret'
 
     # MAIN DEPLOYMENT #############################################################
     - name: 'Deploying {{pgrole}}'
