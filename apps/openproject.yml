@@ -35,7 +35,7 @@
         pg_volumes:
           - '/etc/localtime:/etc/localtime:ro'
           - '/opt/appdata/{{pgrole}}/data:/var/openproject/pgdata'
-		  - '/opt/appdata/{{pgrole}}/static:/var/openproject/assets'
+          - '/opt/appdata/{{pgrole}}/static:/var/openproject/assets'
           - '{{path.stdout}}:{{path.stdout}}'
           - '/mnt:/mnt'
 
@@ -62,4 +62,3 @@
               - '{{pgrole}}'
         state: started
         labels: '{{pg_labels}}'
-
