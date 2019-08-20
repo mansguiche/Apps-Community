@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# Title:      PlexGuide (Reference Title File)
+# Title:      PGBlitz (Reference Title File)
 # Author(s):  Admin9705
-# URL:        https://plexguide.com - http://github.plexguide.com
+# URL:        https://pgblitz.com - http://github.pgblitz.com
 # GNU:        General Public License v3.0
 ################################################################################
 ---
@@ -12,52 +12,39 @@
     # FACTS #######################################################################
     - name: 'Set Known Facts'
       set_fact:
-        pgrole: 'nzbthrottle'
-        intport: '0'
-        extport: '0'
-        image: 'daghaian/nzbthrottle'
+        pgrole: 'dockergc'
+        intport: '1'
+        extport: '1'
+        image: 'clockworksoul/docker-gc-cron'
 
     # CORE (MANDATORY) ############################################################
     - name: 'Including cron job'
       include_tasks: '/opt/communityapps/apps/_core.yml'
 
-    - name: 'Checking {{pgrole}}'s json existance'
-      stat:
-        path: '/opt/communityapps/apps/templates/{{pgrole}}/config.json'
-      register: jsoncheck
-
-    - name: 'Copying file for {{pgrole}}'
-      copy:
-        src: '/opt/communityapps/apps/templates/{{pgrole}}/config.json'
-        dest: '/opt/appdata/{{pgrole}}/{{pgrole}}/config.json'
-        directory_mode: yes
+    # MANDATORY DOCKERGC ##########################################################
+    - name: Install docker-gc-exclude
+      template:
+        src: /opt/communityapps/apps/templates/docker-gc-exclude
+        dest: /opt/appdata/{{pgrole}}/docker-gc-exclude
         force: yes
+        mode: 0775
         owner: '1000'
         group: '1000'
-        mode: 0755
-      when: not jsoncheck.stat.exists
 
     # LABELS ######################################################################
-    - name: 'Adding Traefik'
-      set_fact:
-        pg_labels:
-          traefik.frontend.auth.forward.address: '{{gauth}}'
-          traefik.enable: 'true'
-          traefik.port: '{{intport}}'
-
-          traefik.frontend.rule: 'Host:{{pgrole}}.{{domain.stdout}},{{tldset}}'
-
     - name: 'Setting PG Volumes'
       set_fact:
         pg_volumes:
-          - '/etc/localtime:/etc/localtime:ro'
-          - '/opt/appdata/{{pgrole}}/config.json:/{{pgrole}}/config.json:ro'
+          - /opt/appdata/dockergc/docker-gc-exclude:/etc/docker-gc-exclude
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /etc/localtime:/etc/localtime:ro
 
     - name: 'Setting PG ENV'
       set_fact:
         pg_env:
           PUID: '1000'
           PGID: '1000'
+          CLEAN_UP_VOLUMES: 1
 
     # MAIN DEPLOYMENT #############################################################
     - name: 'Deploying {{pgrole}}'
@@ -65,8 +52,6 @@
         name: '{{pgrole}}'
         image: '{{image}}'
         pull: yes
-        published_ports:
-          - '{{ports.stdout}}{{extport}}:{{intport}}'
         volumes: '{{pg_volumes}}'
         env: '{{pg_env}}'
         restart_policy: unless-stopped
@@ -75,4 +60,5 @@
             aliases:
               - '{{pgrole}}'
         state: started
-        labels: '{{pg_labels}}'
+        labels:
+          traefik.enabled: 'false'
