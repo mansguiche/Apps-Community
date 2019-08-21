@@ -15,7 +15,7 @@
         pgrole: 'funkwhale'
         intport: '80'
         extport: '3030'
-        image: 'funkwhale/all-in-one:0.18.2'
+        image: 'funkwhale/all-in-one:latest'
 
     # CORE (MANDATORY) ############################################################
     - name: 'Including cron job'
