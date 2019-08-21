@@ -56,7 +56,7 @@
           SECRET_KEY_BASE: 'secret'
 
     # MAIN DEPLOYMENT #############################################################
-    -name: 'Deploying {{pgrole}}_db'
+    - name: 'Deploying {{pgrole}}_db'
       docker_container:
         name: '{{pgrole}}_db'
         image: 'postgres:10'
