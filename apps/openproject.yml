@@ -15,7 +15,7 @@
         pgrole: 'openproject'
         intport: '80'
         extport: '8267'
-        image: 'openproject/community:8'
+        image: 'openproject/community:9'
 
     # CORE (MANDATORY) ############################################################
     - name: 'Including cron job'
@@ -39,13 +39,13 @@
           traefik.frontend.headers.customResponseHeaders: 'X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex'
           traefik.frontend.headers.forceSTSHeader: 'true'
 
-    - name: 'Setting PG Volumes'
-      set_fact:
-        pg_volumes:
-          - '/etc/localtime:/etc/localtime:ro'
-          - '/opt/appdata/{{pgrole}}/data:/var/openproject/pgdata'
-          - '/opt/appdata/{{pgrole}}/static:/var/openproject/assets'
-          - '{{path.stdout}}:{{path.stdout}}'
+#    - name: 'Setting PG Volumes'
+#      set_fact:
+#        pg_volumes:
+#          - '/etc/localtime:/etc/localtime:ro'
+#          - '/opt/appdata/{{pgrole}}/data:/var/openproject/pgdata'
+#          - '/opt/appdata/{{pgrole}}/static:/var/openproject/assets'
+#          - '{{path.stdout}}:{{path.stdout}}'
 
     - name: 'Setting PG ENV'
       set_fact:
@@ -62,7 +62,7 @@
         pull: yes
         published_ports:
           - '{{ports.stdout}}{{extport}}:{{intport}}'
-        volumes: '{{pg_volumes}}'
+#        volumes: '{{pg_volumes}}'
         env: '{{pg_env}}'
         restart_policy: unless-stopped
         networks:
